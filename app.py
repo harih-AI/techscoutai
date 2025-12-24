@@ -51,9 +51,9 @@ profile = st.session_state.profile
 # --- Logic to Determine Current Question ---
 current_question = ""
 if stage == 0:
-    current_question = "**Hello! I'm TalentScout.**\n\nI'm here to find your perfect tech role.\n\nFirst, what is your **full name**?"
+    current_question = "Hello! I'm TalentScout.\n\nI'm here to find your perfect tech role.\n\nFirst, what is your **full name**?"
 elif stage == 1:
-    current_question = f"Nice to meet you, **{profile.get('name', 'candidate')}**.\n\nWhat is your **email address**?"
+    current_question = f"Nice to meet you, {profile.get('name', 'candidate')}.\n\nWhat is your **email address**?"
 elif stage == 2:
     current_question = "Got it.\n\nCould you please share your **phone number**?"
 elif stage == 3:

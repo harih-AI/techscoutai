@@ -1,11 +1,14 @@
-# 🤖 TalentScout – AI Hiring Assistant
+# 🤖 TalentScout Pro – AI Hiring Assistant
 
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://techscoutai.streamlit.app)
 ![Python](https://img.shields.io/badge/Python-3.9%2B-blue?style=for-the-badge&logo=python&logoColor=white)
-![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)
 ![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4-412991?style=for-the-badge&logo=openai&logoColor=white)
 
+> [!TIP]
+> **🏆 Global Hackathon Submission:** This project is designed to showcase the power of AI in streamlining recursive recruitment tasks with a world-class user experience.
+
 ## 🚀 Overview
-**TalentScout** is a cutting-edge, AI-powered hiring assistant designed to revolutionize initial candidate screening. By leveraging advanced LLMs, it conducts natural, context-aware interviews for technology roles, saving recruiters time while providing candidates with an engaging first touchpoint.
+**TalentScout Pro** is a cutting-edge, AI-powered hiring assistant designed to revolutionize initial candidate screening. By leveraging advanced LLMs, it conducts natural, context-aware interviews for technology roles, saving recruiters time while providing candidates with an engaging first touchpoint.
 
 ## ✨ Key Features
 
