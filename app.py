@@ -10,7 +10,7 @@ except Exception:
     pass
 
 from core.state import init_state
-from core.logic import generate_questions
+from core.logic import generate_questions, validate_answer, clean_tech_stack
 from core.llm import call_llm
 
 from core.prompts import *
@@ -149,30 +149,49 @@ if prompt := st.chat_input("Type your answer here..."):
             valid = True
     elif stage == 6:
         if is_valid(prompt):
-            profile["tech_stack"] = [t.strip().title() for t in prompt.split(",")]
-            # Generate Questions
-            with st.spinner("Analyzing profile..."):
-                try:
-                    st.session_state.questions = generate_questions(profile["tech_stack"], profile["experience"])
-                    valid = True
-                except Exception as e:
-                    add_message("assistant", f"Error generating questions: {e}")
-                    valid = False
+            profile["tech_stack"] = clean_tech_stack(prompt)
+            if not profile["tech_stack"]:
+                add_message("assistant", "I couldn't identify any technologies in your input. Please list them separated by commas.")
+                valid = False
+            else:
+                # Generate Questions
+                with st.spinner("Analyzing profile..."):
+                    try:
+                        st.session_state.questions = generate_questions(profile["tech_stack"], profile["experience"])
+                        valid = True
+                    except Exception as e:
+                        add_message("assistant", f"Error generating questions: {e}")
+                        valid = False
     elif stage == 7:
         # Answer to technical question
         if "responses" not in st.session_state:
             st.session_state.responses = []
-        st.session_state.responses.append(prompt)
         
+        current_idx = st.session_state.current_tech
+        tech, question = st.session_state.questions[current_idx]
+        
+        # 1. Validate Answer
+        with st.spinner("Evaluating..."):
+            feedback = validate_answer(tech, question, prompt)
+        
+        # 2. Add feedback to history so candidate sees it
+        add_message("assistant", feedback)
+        
+        # 3. Store response
+        st.session_state.responses.append({"question": question, "answer": prompt, "feedback": feedback})
+        
+        # 4. Move to next
         st.session_state.current_tech += 1
+        time.sleep(1) # Tiny pause for UX
+        
         if st.session_state.current_tech >= len(st.session_state.questions):
            st.session_state.stage += 1 # Move to closing
            st.rerun()
         else:
            # Stay in stage 7 but next question will render on rerun
            st.rerun()
-        # Implicitly valid for tech questions
-        valid = False # We handled the move manually, don't auto-increment stage
+        # Implicitly valid for tech questions flow control
+        valid = False 
         
     # 3. Transition
     if valid:
