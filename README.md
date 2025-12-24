@@ -76,6 +76,3 @@ Get TalentScout up and running in minutes.
 
 ---
 
-<p align="center">
-  Generated with ❤️ by Antenna Gravity
-</p>
