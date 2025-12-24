@@ -10,11 +10,11 @@ except Exception:
     pass
 
 from core.state import init_state
-from core.logic import generate_questions, validate_answer, clean_tech_stack
+from core.logic import generate_questions, validate_answer, clean_tech_stack, extract_info_with_llm
 from core.llm import call_llm
 
 from core.prompts import *
-from utils.validators import is_exit, is_valid
+from utils.validators import is_exit, is_valid, is_valid_email, is_valid_phone, extract_years
 
 # --- UI Config ---
 st.set_page_config(page_title="TalentScout AI", page_icon="🤖", layout="centered")
@@ -128,17 +128,43 @@ if prompt := st.chat_input("Type your answer here..."):
             profile["name"] = prompt
             valid = True
     elif stage == 1:
-        if is_valid(prompt):
-            profile["email"] = prompt
+        if is_valid_email(prompt):
+            profile["email"] = prompt.strip()
             valid = True
+        else:
+            # Attempt LLM extraction for conversational input
+            extracted = extract_info_with_llm("The user's email address", prompt)
+            if extracted and is_valid_email(extracted):
+                profile["email"] = extracted
+                valid = True
+            else:
+                add_message("assistant", "That doesn't look like a valid email. Please share a valid email address (e.g., name@example.com).")
+                valid = False
     elif stage == 2:
-        if is_valid(prompt):
-            profile["phone"] = prompt
+        if is_valid_phone(prompt):
+            profile["phone"] = prompt.strip()
             valid = True
+        else:
+            extracted = extract_info_with_llm("The user's phone number", prompt)
+            if extracted and is_valid_phone(extracted):
+                profile["phone"] = extracted
+                valid = True
+            else:
+                add_message("assistant", "Could you please provide a valid phone number? (Include country code if possible).")
+                valid = False
     elif stage == 3:
-        if is_valid(prompt):
-            profile["experience"] = prompt
+        years = extract_years(prompt)
+        if years:
+            profile["experience"] = years
             valid = True
+        else:
+            extracted = extract_info_with_llm("Years of experience (number only)", prompt)
+            if extracted and extracted.isdigit():
+                profile["experience"] = extracted
+                valid = True
+            else:
+                add_message("assistant", "Please specify your years of experience as a number (e.g., '5' or '3 years').")
+                valid = False
     elif stage == 4:
         if is_valid(prompt):
             profile["position"] = prompt

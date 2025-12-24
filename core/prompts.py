@@ -46,3 +46,16 @@ Rules:
 - Be professional and encouraging.
 - If the answer is vague, ask for a bit more detail (but don't fail them immediately).
 """
+
+EXTRACTION_PROMPT = """
+You are a data extraction assistant.
+Extract the requested field from the following user input.
+
+Context: {context}
+User Input: {user_input}
+
+Rules:
+- ONLY output the extracted value.
+- If the value cannot be found or is invalid for the context, output "NONE".
+- Be concise.
+"""
