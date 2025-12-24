@@ -15,46 +15,19 @@ from core.llm import call_llm
 
 from core.prompts import *
 from utils.validators import is_exit, is_valid, is_valid_email, is_valid_phone, extract_years
+from utils.style_utils import inject_premium_css, render_sidebar_profile, render_message
 
 # --- UI Config ---
-st.set_page_config(page_title="TalentScout AI", page_icon="🤖", layout="centered")
+st.set_page_config(page_title="TalentScout Pro", page_icon="🤖", layout="wide")
 
-# Custom CSS for "Premium" look
-st.markdown("""
-    <style>
-    .stApp {
-        background-color: #0E1117;
-        color: #FAFAFA;
-    }
-    .stTextInput > div > div > input {
-        background-color: #262730;
-        color: #FAFAFA;
-    }
-    .main-header {
-        font-family: 'Helvetica Neue', sans-serif;
-        font-weight: 700;
-        color: #4F8BF9;
-        text-align: center;
-        margin-bottom: 2rem;
-    }
-    .chat-bubble {
-        padding: 1rem;
-        border-radius: 10px;
-        margin-bottom: 1rem;
-    }
-    .ai-bubble {
-        background-color: #1E232F;
-        border-left: 4px solid #4F8BF9;
-    }
-    .user-bubble {
-        background-color: #2C333F;
-        border-right: 4px solid #00C853;
-        text-align: right;
-    }
-    </style>
-""", unsafe_allow_html=True)
+# Inject Global Premium CSS
+inject_premium_css()
 
-st.markdown("<h1 class='main-header'>🤖 TalentScout AI</h1>", unsafe_allow_html=True)
+# Render Sidebar with Live Profile Card
+render_sidebar_profile(st.session_state.get("profile", {}), st.session_state.get("stage", 0))
+
+# Main Content Area
+st.markdown("<h1 class='main-header neon-text-cyan'>🤖 TalentScout Pro AI</h1>", unsafe_allow_html=True)
 
 init_state(st)
 
@@ -66,13 +39,11 @@ if "history" not in st.session_state:
 
 def display_chat():
     for role, text in st.session_state.history:
-        with st.chat_message(role):
-            st.markdown(text)
+        render_message(role, text)
 
 def add_message(role, text):
     st.session_state.history.append((role, text))
-    with st.chat_message(role):
-        st.markdown(text)
+    render_message(role, text)
 
 stage = st.session_state.get("stage", 0)
 profile = st.session_state.profile
